@@ -1,7 +1,6 @@
 async function cargarPartidosDisponibles() {
   const loading = document.getElementById('loading');
   const errorDiv = document.getElementById('error');
-  const contenedor = document.getElementById('contenedor-partidos');
 
   if (loading) loading.style.display = 'block';
   if (errorDiv) errorDiv.style.display = 'none';
@@ -24,19 +23,17 @@ function mostrarPartidos(partidos) {
   const loading = document.getElementById('loading');
   const errorDiv = document.getElementById('error');
 
+  if (!contenedor) return;
   if (loading) loading.style.display = 'none';
   if (errorDiv) errorDiv.style.display = 'none';
-  if (!contenedor) return;
 
-  contenedor.innerHTML = '';
-
-  partidos.forEach(partido => {
+  contenedor.innerHTML = partidos.map(partido => {
     const local = partido.local ?? 'Equipo Local';
     const visitante = partido.visitante ?? 'Equipo Visitante';
     const fecha = partido.fecha ?? 'HOY';
     const prediccion = partido.prediccion ?? 'Sin predicción';
 
-    contenedor.innerHTML += `
+    return `
       <div class="card">
         <div class="partido-header">
           <span class="equipo-local">${local}</span>
@@ -49,7 +46,7 @@ function mostrarPartidos(partidos) {
         </div>
       </div>
     `;
-  });
+  }).join('');
 }
 
 function mostrarErrorEnPantalla(mensaje) {
