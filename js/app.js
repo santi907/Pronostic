@@ -1,5 +1,5 @@
 // 1. Configuración de API-Sports con tu clave real
-const API_KEY = '7232d57a2397121a214f82a7dce2d51a';
+const API_KEY = '6abb1d1f42fe22f7cc02d5b8f1c79c02';
 const PROXY_URL = 'https://corsproxy.io/?';
 
 // Obtenemos la fecha de hoy de forma automática (Formato YYYY-MM-DD)
