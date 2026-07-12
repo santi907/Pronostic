@@ -5,14 +5,20 @@ async function cargarPartidosDisponibles() {
   if (loading) loading.style.display = 'block';
   if (errorDiv) errorDiv.style.display = 'none';
 
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 10000);
+
   try {
     const res = await fetch('https://sports.bzzoiro.com/football/api/v2/matches/live/', {
       headers: {
-        Authorization: 'Token dd07cdbeed19f58195949f42b3836397a172cb11'
-      }
+        Authorization: 'Token TU_TOKEN_AQUI'
+      },
+      signal: controller.signal
     });
 
-    if (!res.ok) throw new Error('Error en API');
+    clearTimeout(timeoutId);
+
+    if (!res.ok) throw new Error(`Error en API ${res.status}`);
     const data = await res.json();
 
     const partidos = (data.results || data.data || []).map(item => ({
@@ -24,6 +30,7 @@ async function cargarPartidosDisponibles() {
 
     mostrarPartidos(partidos);
   } catch (err) {
+    clearTimeout(timeoutId);
     console.error(err);
     mostrarErrorEnPantalla('No se pudieron cargar los partidos.');
   } finally {
