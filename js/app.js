@@ -1,147 +1,66 @@
-// ==========================================
-// CONFIGURACIÓN REAL DE TU API (BZZOIRO)
-// ==========================================
-const MODO_DESARROLLO = false; 
-const API_TOKEN = 'be6f00ab1f68e6b755201f1a7cd264a93be3d0cf'; 
+async function cargarPartidosDisponibles() {
+  const loading = document.getElementById('loading');
+  const errorDiv = document.getElementById('error');
+  const contenedor = document.getElementById('contenedor-partidos');
 
-// URL real extraída de tu documentación oficial
-const API_URL = 'https://sports.bzzoiro.com/football/api/v2/matches/live/'; 
+  if (loading) loading.style.display = 'block';
+  if (errorDiv) errorDiv.style.display = 'none';
 
-// ==========================================
-// LÓGICA DE LA APLICACIÓN
-// ==========================================
-
-function obtenerContenedorHTML() {
-    return document.getElementById('contenedor-partidos') || 
-           document.getElementById('contenedor') || 
-           document.getElementById('partidos');
-}
-
-function cargarPartidosDisponibles() {
-    console.log("Conectando en vivo con sports.bzzoiro.com...");
-    
-    const loading = document.getElementById('loading');
-    const errorDiv = document.getElementById('error');
-    
-    if (loading) loading.style.display = 'block';
-    if (errorDiv) errorDiv.style.display = 'none';
-
-    if (MODO_DESARROLLO) {
-        setTimeout(cargarRespaldoLocal, 500);
-        return;
-    }
-
-    // Petición con el formato Token exacto de tu documentación
-    fetch(API_URL, {
-        method: 'GET',
-        headers: {
-            'Authorization': `Token ${API_TOKEN}`,
-            'Content-Type': 'application/json'
-        }
-    })
-    .then(response => {
-        if (!response.ok) throw new Error(`Error Bzzoiro (Status ${response.status})`);
-        return response.json();
-    })
-    .then(data => {
-        // Adaptabilidad para leer el arreglo de partidos directo o desde subcapas de la API
-        const partidosAPI = data.results || data.data || (Array.isArray(data) ? data : null);
-
-        if (!partidosAPI || partidosAPI.length === 0) {
-            console.warn("No hay partidos en vivo en este instante. Usando respaldo.");
-            cargarRespaldoLocal();
-            return;
-        }
-
-        const partidosTransformados = partidosAPI.slice(0, 10).map((item, index) => {
-            const local = item.home_team?.name || item.home?.name || item.home_team || "Equipo Local";
-            const visitante = item.away_team?.name || item.away?.name || item.away_team || "Equipo Visitante";
-            const liga = item.league?.name || item.tournament?.name || "Torneo Profesional";
-
-            let pronostico = "";
-            const esFutbolBrasil = liga.toLowerCase().includes("serie b") || liga.toLowerCase().includes("brasil");
-
-            if (esFutbolBrasil) {
-                pronostico = index % 2 === 0 
-                    ? `Torneo: ${liga}. Pronóstico: Menos de 2.5 goles (Partido muy cerrado).`
-                    : `Torneo: ${liga}. Pronóstico: Gana o empata ${local} por localía.`;
-            } else {
-                pronostico = index % 2 === 0
-                    ? `Torneo: ${liga}. Pronóstico: Más de 1.5 goles totales.`
-                    : `Torneo: ${liga}. Pronóstico: Apuesta sin empate para ${local}.`;
-            }
-
-            return {
-                local: local,
-                visitante: visitante,
-                fecha: "HOY EN VIVO",
-                prediccion: pronostico
-            };
-        });
-
-        mostrarPartidos(partidosTransformados);
-    })
-    .catch(error => {
-        console.warn('API en espera de partidos en vivo. Cargando archivo local de respaldo...', error);
-        cargarRespaldoLocal();
-    });
-}
-
-function cargarRespaldoLocal() {
-    fetch('./datos/partidos.json?v=' + new Date().getTime()) 
-        .then(res => {
-            if (!res.ok) throw new Error("No se pudo leer partidos.json");
-            return res.json();
-        })
-        .then(datosLocales => mostrarPartidos(datosLocales))
-        .catch(err => {
-            console.error(err);
-            mostrarErrorEnPantalla("Predicciones en actualización. Intenta más tarde.");
-        });
+  try {
+    const res = await fetch('./datos/partidos.json', { cache: 'no-store' });
+    if (!res.ok) throw new Error('No se pudo leer partidos.json');
+    const datos = await res.json();
+    mostrarPartidos(Array.isArray(datos) ? datos : []);
+  } catch (error) {
+    console.error(error);
+    mostrarErrorEnPantalla('Predicciones en actualización. Intenta más tarde.');
+  } finally {
+    if (loading) loading.style.display = 'none';
+  }
 }
 
 function mostrarPartidos(partidos) {
-    const contenedor = obtenerContenedorHTML();
-    const loading = document.getElementById('loading');
-    const errorDiv = document.getElementById('error');
+  const contenedor = document.getElementById('contenedor-partidos');
+  const loading = document.getElementById('loading');
+  const errorDiv = document.getElementById('error');
 
-    if (loading) loading.style.display = 'none';
-    if (errorDiv) errorDiv.style.display = 'none';
+  if (loading) loading.style.display = 'none';
+  if (errorDiv) errorDiv.style.display = 'none';
+  if (!contenedor) return;
 
-    if (!contenedor) return;
-    contenedor.innerHTML = '';
+  contenedor.innerHTML = '';
 
-    partidos.forEach(partido => {
-        contenedor.innerHTML += `
-            <div class="card">
-                <div class="partido-header">
-                    <span class="equipo-local">${partido.local}</span>
-                    <span class="vs">vs</span>
-                    <span class="equipo-visitante">${partido.visitante}</span>
-                </div>
-                <p class="fecha">Estado: <strong>${partido.fecha}</strong></p>
-                <div class="prediccion">
-                    <p><strong>Predicción:</strong> ${partido.prediccion}</p>
-                </div>
-            </div>
-        `;
-    });
+  partidos.forEach(partido => {
+    const local = partido.local ?? 'Equipo Local';
+    const visitante = partido.visitante ?? 'Equipo Visitante';
+    const fecha = partido.fecha ?? 'HOY';
+    const prediccion = partido.prediccion ?? 'Sin predicción';
+
+    contenedor.innerHTML += `
+      <div class="card">
+        <div class="partido-header">
+          <span class="equipo-local">${local}</span>
+          <span class="vs">vs</span>
+          <span class="equipo-visitante">${visitante}</span>
+        </div>
+        <p class="fecha">Fecha: <strong>${fecha}</strong></p>
+        <div class="prediccion">
+          <p><strong>Predicción:</strong> ${prediccion}</p>
+        </div>
+      </div>
+    `;
+  });
 }
 
 function mostrarErrorEnPantalla(mensaje) {
-    const loading = document.getElementById('loading');
-    const errorDiv = document.getElementById('error');
-    if (loading) loading.style.display = 'none';
-    if (errorDiv) {
-        errorDiv.textContent = mensaje;
-        errorDiv.style.display = 'block';
-    }
+  const loading = document.getElementById('loading');
+  const errorDiv = document.getElementById('error');
+
+  if (loading) loading.style.display = 'none';
+  if (errorDiv) {
+    errorDiv.textContent = mensaje;
+    errorDiv.style.display = 'block';
+  }
 }
 
 document.addEventListener('DOMContentLoaded', cargarPartidosDisponibles);
-
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js');
-    });
-}
