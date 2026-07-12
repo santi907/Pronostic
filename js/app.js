@@ -1,5 +1,5 @@
 // 1. Configuración DIRECTA de API-Sports (Sin proxies saturados)
-const API_KEY = '7232d57a2397121a214f82a7dce2d51a';
+const API_KEY = 'b6bcb2de22fccf7a3445ad1faca775d8';
 
 // Obtenemos la fecha de hoy de forma automática (Formato YYYY-MM-DD)
 const hoy = new Date().toISOString().split('T')[0];
