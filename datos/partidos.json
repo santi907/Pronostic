@@ -3,30 +3,12 @@
     "local": "Equipo Local 1",
     "visitante": "Equipo Visitante 1",
     "fecha": "2026-07-12",
-    "prediccion": "Torneo: Serie B / Liga. Pronóstico: Gana o empata el local."
+    "prediccion": "Gana o empata el local."
   },
   {
     "local": "Equipo Local 2",
     "visitante": "Equipo Visitante 2",
     "fecha": "2026-07-12",
-    "prediccion": "Pronóstico: Más de 1.5 goles totales."
-  },
-  {
-    "local": "Equipo Local 3",
-    "visitante": "Equipo Visitante 3",
-    "fecha": "2026-07-12",
-    "prediccion": "Pronóstico: Ambos equipos anotan."
-  },
-  {
-    "local": "Equipo Local 4",
-    "visitante": "Equipo Visitante 4",
-    "fecha": "2026-07-12",
-    "prediccion": "Pronóstico: Menos de 2.5 goles."
-  },
-  {
-    "local": "Equipo Local 5",
-    "visitante": "Equipo Visitante 5",
-    "fecha": "2026-07-12",
-    "prediccion": "Pronóstico: Apuesta sin empate a favor del visitante."
+    "prediccion": "Más de 1.5 goles."
   }
 ]
