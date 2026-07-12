@@ -1,10 +1,11 @@
-// 1. Configuración de API-Sports con tu clave real
-const API_KEY = '6abb1d1f42fe22f7cc02d5b8f1c79c02';
-const PROXY_URL = 'https://corsproxy.io/?';
+// 1. Configuración DIRECTA de API-Sports (Sin proxies saturados)
+const API_KEY = '7232d57a2397121a214f82a7dce2d51a';
 
 // Obtenemos la fecha de hoy de forma automática (Formato YYYY-MM-DD)
 const hoy = new Date().toISOString().split('T')[0];
-const API_URL = `${PROXY_URL}https://v3.football.api-sports.io/fixtures?date=${hoy}`;
+
+// Hacemos la petición directa a la API de Football oficial
+const API_URL = `https://v3.football.api-sports.io/fixtures?date=${hoy}`;
 
 // Referencias a los elementos de tu HTML real
 const DOM = {
